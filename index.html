@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BC Travel - Bookings</title>
+  <style>
+    table {
+      border: 2px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+    }
+    th {
+      background-color: peru;
+      text-align: left;
+      padding: 4pt;
+    }
+    tr:nth-child(odd) {
+      background-color: peachpuff;
+    }
+    tr:nth-child(even) {
+      background-color: papayawhip;
+    }
+    td {
+      text-align: left;
+      padding: 4pt;            
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+</head>
+
+<body>
+
+<div id="">
+  <table id="bookings">
+    <thead>
+      <th>Date</th>
+      <th>Ticket</th>
+      <th>Dep Station</th>
+      <th>Dep Time</th>
+      <th>Arr Station</th>
+      <th>Arr Time</th>
+      <th>Train</th>
+      <th>Duration</th>
+      <th>Seat</th>
+      <th>Gate</th>
+      <th>Booking Date</th>                              
+    </thead>
+    <tbody id="bookings-body"></tbody>
+  </table>
+</div>
+
+
+<script>
+(function() {
+  $.getJSON("https://raw.githubusercontent.com/eehenz/bc-travel/master/train-bookings.json", function(data) {
+    console.log("gorrit")
+    console.log(data);
+    $.each( data, function( key, value ) {
+      console.log("Key: " + key);
+      //$( "<span>" + key + "</span>" ).appendTo( "#bookings" );
+      
+      var detailInfo = value['DetailInfo'];
+
+      var ticketInfo = detailInfo['orderDetailCard'];      
+      var ticketBookingDate = ticketInfo['bookDate'];      
+      var ticketPickupNumber = ticketInfo['electronicOrderNo'];
+
+      var trainInfo = detailInfo['trainInfos'][0];
+      var trainDuration = trainInfo['duration'];
+      var trainNumber = trainInfo['trainNO'];
+      var trainSeatType = trainInfo['seatType'];
+
+      var passenger = trainInfo['passengers'][0];
+      var passengerName = passenger[0];
+      var passengerSeat = passenger[3];
+      var passengerGate = passenger[6];
+
+      var departureInfo = trainInfo['departureInfo'];
+      var departureStation = departureInfo[0];
+      var departureTime = departureInfo[1];
+      var departureDate = departureInfo[2];
+      
+      var arrivalInfo = trainInfo['arrivalInfo'];      
+      var arrivalStation = arrivalInfo[0];
+      var arrivalTime = arrivalInfo[1];
+      var arrivalDate = arrivalInfo[2];
+
+      var rowHTML = ""
+      rowHTML += "<tr>"
+      rowHTML   += "<td>" + departureDate + "</td>"
+      rowHTML   += "<td>" + ticketPickupNumber + "</td>"      
+      rowHTML   += "<td>" + departureStation + "</td>"            
+      rowHTML   += "<td>" + departureTime + "</td>"            
+      rowHTML   += "<td>" + arrivalStation + "</td>"            
+      rowHTML   += "<td>" + arrivalTime + "</td>"    
+      rowHTML   += "<td>" + trainNumber + "</td>"                   
+      rowHTML   += "<td>" + trainDuration + "</td>"            
+      rowHTML   += "<td>" + passengerSeat + "</td>"            
+      rowHTML   += "<td>" + passengerGate + "</td>"            
+      rowHTML   += "<td>" + ticketBookingDate + "</td>"                  
+      rowHTML += "</tr>"
+
+      $( rowHTML ).appendTo( "#bookings-body" );
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
