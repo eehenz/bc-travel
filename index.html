@@ -33,6 +33,7 @@
 <div id="">
   <table id="bookings">
     <thead>
+      <th>Trip</th>
       <th>Date</th>
       <th>Ticket</th>
       <th>Dep Station</th>
@@ -57,7 +58,7 @@
     console.log("gorrit")
     console.log(data);
     $.each( data, function( key, value ) {
-      console.log("Key: " + key);
+      //console.log("Key: " + key);
       //$( "<span>" + key + "</span>" ).appendTo( "#bookings" );
       
       var detailInfo = value['DetailInfo'];
@@ -88,6 +89,7 @@
 
       var rowHTML = ""
       rowHTML += "<tr>"
+      rowHTML   += "<td>" + key + "</td>"  
       rowHTML   += "<td>" + departureDate + "</td>"
       rowHTML   += "<td>" + ticketPickupNumber + "</td>"      
       rowHTML   += "<td>" + departureStation + "</td>"            
