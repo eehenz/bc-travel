@@ -30,7 +30,7 @@
 
 <body>
 
-<div id="">
+<div id="content">
   <table id="bookings">
     <thead>
       <th>Trip</th>
@@ -52,45 +52,75 @@
 
 
 <script>
+
+var dayNameMap = { 
+  "monday": "周一", 
+  "tuesday": "周二", 
+  "wednesday": "周三",
+  "thursday": "周四",
+  "friday": "周五",
+  "saturday": "周六",
+  "sunday": "周日"
+};        
+
+var stationMap = {
+  "changzhou": "常州",
+  "changzhoubei": "常州北",
+  "hangzhoudong": "杭州东",
+  "hefeinan": "合肥南",
+  "nanjingnan": "南京南",
+  "ningbo": "宁波",
+  "shanghaihongqiao": "上海虹桥",  
+  "suzhou": "苏州",
+  "suzhoubei": "苏州北",  
+  "zhenjiangnan": "镇江南",
+  "wenzhounan": "温州南"
+  // TODO: Changzhou
+  // TODO: Wenzhou
+  // TODO: Wuxi
+};
+
 (function() {
   $.getJSON("https://eehenz.github.io/bc-travel/train-bookings.json", function(data) {
   //$.getJSON("https://raw.githubusercontent.com/eehenz/bc-travel/master/train-bookings.json", function(data) {
-    console.log("gorrit")
-    console.log(data);
-    $.each( data, function( key, value ) {
-      //console.log("Key: " + key);
-      //$( "<span>" + key + "</span>" ).appendTo( "#bookings" );
-      
+    $.each( data, function( key, value ) {      
       var detailInfo = value['DetailInfo'];
 
       var ticketInfo = detailInfo['orderDetailCard'];      
-      var ticketBookingDate = ticketInfo['bookDate'];      
+      var ticketBookingDateParts = ticketInfo['bookDate'].split("-");      
+      var ticketBookingDate = String(Number(ticketBookingDateParts[2]) - 2000) + "-" + ticketBookingDateParts[1] + "-" + ticketBookingDateParts[0];
+      //var ticketBookingDate = String(Number(ticketBookingDateParts[2]) - 2000) + ticketInfo[1] + ticketBookingDateParts;
       var ticketPickupNumber = ticketInfo['electronicOrderNo'];
 
       var trainInfo = detailInfo['trainInfos'][0];
-      var trainDuration = trainInfo['duration'];
+      var trainDuration = String(trainInfo['duration']).replace("h", "小时").replace("m", "分");
       var trainNumber = trainInfo['trainNO'];
       var trainSeatType = trainInfo['seatType'];
 
       var passenger = trainInfo['passengers'][0];
       var passengerName = passenger[0];
-      var passengerSeat = passenger[3];
+      var passengerSeatParts = passenger[3].split(" ");
+      var passengerSeat = passengerSeatParts[1] + "车" + passengerSeatParts[3] + "号";
       var passengerGate = passenger[6];
 
       var departureInfo = trainInfo['departureInfo'];
-      var departureStation = departureInfo[0];
+      var departureStation = translateStation(departureInfo[0]);
       var departureTime = departureInfo[1];
-      var departureDate = departureInfo[2];
+      //var departureDate = ;
       
+      var departureDateParts = String(departureInfo[2]).split(" ");
+      var departureDate = departureDateParts[0];
+      var departureDayName = translateDayName(departureDateParts[1]);
+
       var arrivalInfo = trainInfo['arrivalInfo'];      
-      var arrivalStation = arrivalInfo[0];
+      var arrivalStation = translateStation(arrivalInfo[0]);
       var arrivalTime = arrivalInfo[1];
       var arrivalDate = arrivalInfo[2];
 
       var rowHTML = ""
       rowHTML += "<tr>"
       rowHTML   += "<td>" + key + "</td>"  
-      rowHTML   += "<td>" + departureDate + "</td>"
+      rowHTML   += "<td>" + departureDate + " " + departureDayName + "</td>"
       rowHTML   += "<td>" + ticketPickupNumber + "</td>"      
       rowHTML   += "<td>" + departureStation + "</td>"            
       rowHTML   += "<td>" + departureTime + "</td>"            
@@ -109,6 +139,25 @@
     });
   });
 })();
+
+function translateDayName(dayName) {
+  var lowerCaseDayName = String(dayName).toLowerCase();
+  console.log(lowerCaseDayName);
+  if ( Object.keys(dayNameMap).includes( lowerCaseDayName ) ) {
+    return dayNameMap[lowerCaseDayName];
+  }
+  return dayName;
+}
+
+function translateStation(station) {
+  var lowerCaseStation = String(station).toLowerCase();
+  console.log(lowerCaseStation);
+  if ( Object.keys(stationMap).includes( lowerCaseStation ) ) {
+    return stationMap[lowerCaseStation];
+  }
+  return station;
+}
+
 </script>
 
 </body>
