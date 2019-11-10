@@ -20,6 +20,10 @@
     tr:nth-child(even) {
       background-color: papayawhip;
     }
+    tr.archived {
+      background-color: LightGray;
+      color: DarkGray;
+    }
     td {
       text-align: left;
       padding: 4pt;            
@@ -82,7 +86,7 @@ var stationMap = {
 
 (function() {
   $.getJSON("https://eehenz.github.io/bc-travel/train-bookings.json", function(data) {
-  //$.getJSON("https://raw.githubusercontent.com/eehenz/bc-travel/master/train-bookings.json", function(data) {
+  //$.getJSON("./train-bookings.json", function(data) {
     $.each( data, function( key, value ) {      
       var detailInfo = value['DetailInfo'];
 
@@ -117,23 +121,32 @@ var stationMap = {
       var arrivalTime = arrivalInfo[1];
       var arrivalDate = arrivalInfo[2];
 
-      var rowHTML = ""
-      rowHTML += "<tr>"
-      rowHTML   += "<td>" + key + "</td>"  
-      rowHTML   += "<td>" + departureDate + " " + departureDayName + "</td>"
-      rowHTML   += "<td>" + ticketPickupNumber + "</td>"      
-      rowHTML   += "<td>" + departureStation + "</td>"            
-      rowHTML   += "<td>" + departureTime + "</td>"            
-      rowHTML   += "<td>" + arrivalStation + "</td>"            
-      rowHTML   += "<td>" + arrivalTime + "</td>"    
-      rowHTML   += "<td>"
-      rowHTML   +=    "<a href='http://shike.gaotie.cn/checi.asp?checi=" + trainNumber + "' target='_blank'>" + trainNumber + "</a>"    
-      rowHTML   += "</td>"
-      rowHTML   += "<td>" + trainDuration + "</td>"                   
-      rowHTML   += "<td>" + passengerSeat + "</td>"            
-      rowHTML   += "<td>" + passengerGate + "</td>"            
-      rowHTML   += "<td>" + ticketBookingDate + "</td>"                  
-      rowHTML += "</tr>"
+      key = key.trim().toUpperCase()
+      var isArchivedBooking = key.startsWith("X");
+      key = key.replace("X", "")
+      key = key.trim()
+
+      var rowHTML = "";
+      rowHTML += "<tr lump " + (isArchivedBooking ? " class='archived'" : "") + ">";
+      rowHTML   += "<td>" + key + "</td>";
+      rowHTML   += "<td>" + departureDate + " " + departureDayName + "</td>";
+      rowHTML   += "<td>" + ticketPickupNumber + "</td>"; 
+      rowHTML   += "<td>" + departureStation + "</td>";         
+      rowHTML   += "<td>" + departureTime + "</td>";        
+      rowHTML   += "<td>" + arrivalStation + "</td>";            
+      rowHTML   += "<td>" + arrivalTime + "</td>";
+      rowHTML   += "<td>";
+      if (!isArchivedBooking) {
+        rowHTML   +=    "<a href='http://shike.gaotie.cn/checi.asp?checi=" + trainNumber + "' target='_blank'>" + trainNumber + "</a>";
+      } else {
+        rowHTML   +=    trainNumber;
+      }
+      rowHTML   += "</td>";
+      rowHTML   += "<td>" + trainDuration + "</td>";
+      rowHTML   += "<td>" + passengerSeat + "</td>";           
+      rowHTML   += "<td>" + passengerGate + "</td>";           
+      rowHTML   += "<td>" + ticketBookingDate + "</td>";
+      rowHTML += "</tr>";
 
       $( rowHTML ).appendTo( "#bookings-body" );
     });
